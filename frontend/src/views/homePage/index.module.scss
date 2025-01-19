@@ -11,7 +11,9 @@
         height: 3.5rem;
         padding: 1rem 1rem;
         align-items: center;
+        justify-content: space-between;
         gap: 1rem;
+        flex-wrap: wrap;
 
         img {
             display: block;
@@ -22,45 +24,59 @@
         .displayName {
             font-size: 1.3rem;
             user-select: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: calc(90vw - 4.5rem);
         }
 
-        .ipAddress {
-            margin-left: auto;
-        }
-
-        .conf,
-        .logout {
-            font-size: inherit;
+        .functions {
             display: flex;
-            align-items: center;
-            gap: 0.25em;
-            padding: 0.25rem 1rem;
-            line-height: 1.5rem;
-            color: var(--color);
-            background-color: transparent;
-            border: 0.05rem solid var(--color);
-            border-radius: 0.25rem;
-            text-decoration: none;
-            box-sizing: content-box;
-            cursor: pointer;
-            transition:
-                color 0.3s,
-                background-color 0.3s;
+            gap: 1rem;
+            margin-left: auto;
+            flex-wrap: wrap;
+            justify-content: space-between;
+
+            .conf,
+            .install,
+            .logout {
+                font-size: inherit;
+                display: flex;
+                align-items: center;
+                gap: 0.25em;
+                padding: 0.25rem 1rem;
+                line-height: 1.5rem;
+                color: var(--color);
+                background-color: transparent;
+                border: 0.05rem solid var(--color);
+                border-radius: 0.25rem;
+                text-decoration: none;
+                box-sizing: content-box;
+                cursor: pointer;
+                transition:
+                    color 0.3s,
+                    background-color 0.3s;
+            }
+
+            .conf:hover,
+            .install:hover,
+            .logout:hover {
+                color: #FFF;
+                background-color: var(--color);
+            }
+
+            .conf {
+                --color: #F80;
+            }
+
+            .install {
+                --color: #8AF;
+            }
+
+            .logout {
+                --color: #D33;
+            }
         }
 
-        .conf:hover,
-        .logout:hover {
-            color: #FFF;
-            background-color: var(--color);
-        }
-
-        .conf {
-            --color: #F80;
-        }
-
-        .logout {
-            --color: #D33;
-        }
     }
 
     .clients {
@@ -107,12 +123,31 @@
                     display: block;
                     height: 100%;
                     border-radius: 100%;
+                    margin-right: auto;
                 }
 
                 div {
                     font-size: 1.2rem;
                     overflow-x: hidden;
                     text-overflow: ellipsis;
+                }
+
+                .status {
+                    width: 0.75rem;
+                    height: 0.75rem;
+                    border-radius: 50%;
+                }
+
+                .status[data-live="live"] {
+                    background-color: #0F0;
+                }
+
+                .status[data-live="unknow"] {
+                    background-color: #F80;
+                }
+
+                .status[data-live="dead"] {
+                    background-color: #F00;
                 }
             }
 
