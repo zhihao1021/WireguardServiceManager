@@ -35,7 +35,7 @@ from scheams.user import (
 
 class OAuthData(BaseModel):
     code: str
-    joinKey: Optional[str] = None
+    join_key: Optional[str] = None
 
 
 DISCORD_API = "https://discord.com/api/v10/"
@@ -200,7 +200,7 @@ async def valid_code(
 async def oauth(data: OAuthData) -> JWT:
     user_data = await valid_code(
         code=data.code,
-        join_key=data.joinKey
+        join_key=data.join_key
     )
 
     jwt_payload = JWTPayload(**user_data.model_dump())

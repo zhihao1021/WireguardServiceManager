@@ -1,18 +1,19 @@
 "use client"
-import { ChangeEvent, KeyboardEvent, ReactNode, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, ReactNode, Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import req from "@/config/axios";
 import JWT from "@/schemas/jwt";
 
 import style from "./page.module.scss";
 
-export default function LoginPage(): ReactNode {
+function Conetent(): ReactNode {
     const [loading, setLoading] = useState<boolean>(false);
     const [code, setCode] = useState<string | null>();
     const [joinKey, setJoinKey] = useState<string>("");
     const searchParams = useSearchParams();
+    const newCode = searchParams.get("code");
     const router = useRouter();
 
     const onJoinKeyChage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
@@ -38,12 +39,11 @@ export default function LoginPage(): ReactNode {
     }, [code, joinKey, router]);
 
     useEffect(() => {
-        const code = searchParams.get("code");
-        if (code) router.replace(location.pathname);
         setCode(current => {
-            return current ?? code
+            return current ?? newCode
         });
-    }, [searchParams, router]);
+        if (newCode) router.replace(location.pathname);
+    }, [newCode, router]);
 
     return <div className={style.loginPage}>
         <div className={style.box}>
@@ -69,4 +69,9 @@ export default function LoginPage(): ReactNode {
             </div>
         </div>
     </div>
+}
+export default function LoginPage(): ReactNode {
+    return <Suspense>
+        <Conetent />
+    </Suspense>
 }

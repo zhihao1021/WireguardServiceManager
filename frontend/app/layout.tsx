@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Noto_Sans, Noto_Sans_TC } from "next/font/google";
 
 import "./globals.css"
-import { Suspense } from "react";
 
 const notoSans = Noto_Sans({
     variable: "--font-noto-sans",

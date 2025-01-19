@@ -43,17 +43,17 @@ PUBLISHER = AutoPublisher()
 async def status_update_task():
     try:
         while True:
-            # proc = run(
-            #     args=["wg", "show", WIREGUARD_INTERFACE, "latest-handshakes"],
-            #     stdout=PIPE
-            # )
-            # results = proc.stdout.decode().strip().split("\n")
+            proc = run(
+                args=["wg", "show", WIREGUARD_INTERFACE, "latest-handshakes"],
+                stdout=PIPE
+            )
+            results = proc.stdout.decode().strip().split("\n")
 
-            # for result in results:
-            #     public_key, time = result.split("\t")
-            #     STATUS[public_key] = int(time)
-            STATUS["B9ileVkCXT4NeAu/ZBj7LCFYfo4N2xDAdetrOrRpNws="] = int(
-                time())
+            for result in results:
+                public_key, time = result.split("\t")
+                STATUS[public_key] = int(time)
+            # STATUS["B9ileVkCXT4NeAu/ZBj7LCFYfo4N2xDAdetrOrRpNws="] = int(
+            #     time())
 
             await PUBLISHER.send_all()
 

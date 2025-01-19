@@ -46,7 +46,7 @@ export default function App(): ReactNode {
     const [connectionString, setConnectionString] = useState<string>("");
     const [userList, setUserList] = useState<Array<UserWithConnection>>([]);
     const [status, setStatus] = useState<{ [publicKey: string]: number }>({});
-    const [_, setWs] = useState<WebSocket>();
+    const [, setWs] = useState<WebSocket>();
     const router = useRouter();
 
     const userConnectionInfo: UserWithConnection | undefined = useMemo(() => {

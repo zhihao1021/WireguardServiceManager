@@ -1,6 +1,6 @@
 from pywgkey import WgKey
 
-from asyncio import run
+from asyncio import create_task, gather, run
 from ipaddress import IPv4Address
 
 from config import (
@@ -14,6 +14,7 @@ from config import (
 )
 from database.database import setup
 from scheams.connection_info import ConnectionInfo
+from scheams.user import UserData
 
 
 async def main():
@@ -34,6 +35,23 @@ async def main():
     connections = list(map(gen_connection, ips))
 
     await ConnectionInfo.insert_many(connections)
+    connections = await ConnectionInfo.find_all().to_list()
+
+    users = await UserData.find_all().to_list()
+    if len(users) > len(connections):
+        raise RuntimeError("IP Not Enough")
+
+    async def task(user: UserData, conn: ConnectionInfo):
+        conn.discord_user_id = user.discord_id
+        user.connection = conn
+
+        await conn.save()
+        await user.save()
+    
+    await gather(*list(map(
+        lambda pair: create_task(task(*pair)),
+        zip(users, connections)
+    )))
 
     server_ip = list(WIREGUARD_SUBNET.hosts())[0]
     server_side_config = [

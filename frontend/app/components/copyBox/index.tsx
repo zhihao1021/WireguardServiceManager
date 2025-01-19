@@ -17,7 +17,7 @@ export default function CopyBox(props: Readonly<{
             setCopySuccess(true);
             setTimeout(() => setCopySuccess(false), 1000);
         })
-    }, []);
+    }, [text]);
 
     return <div
         className={style.copyBox}
