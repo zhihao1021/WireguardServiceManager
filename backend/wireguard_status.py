@@ -41,8 +41,8 @@ PUBLISHER = AutoPublisher()
 
 
 async def status_update_task():
-    try:
-        while True:
+    while True:
+        try:
             proc = run(
                 args=["wg", "show", WIREGUARD_INTERFACE, "latest-handshakes"],
                 stdout=PIPE
@@ -52,12 +52,12 @@ async def status_update_task():
             for result in results:
                 public_key, time = result.split("\t")
                 STATUS[public_key] = int(time)
-            # STATUS["1NTzpb48wZ7DPoHFMT9/Le0m3UjtBrwZ2R1TUWGsAQE="] = int(
-            #     time())
 
             await PUBLISHER.send_all()
 
             for _ in range(10):
                 await asleep(1)
-    except CancelledError:
-        return
+        except CancelledError:
+            return
+        except:
+            pass

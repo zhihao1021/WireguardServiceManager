@@ -1,5 +1,5 @@
 export function timeParser(time: number): string {
-    if (time === 0) return "從未";
+    if (!time) return "從未";
     const delta = Date.now() - (time * 1000);
 
     const seconds = Math.round(delta / 1000);
