@@ -52,7 +52,7 @@ async def status_update_task():
             for result in results:
                 public_key, time = result.split("\t")
                 STATUS[public_key] = int(time)
-            # STATUS["B9ileVkCXT4NeAu/ZBj7LCFYfo4N2xDAdetrOrRpNws="] = int(
+            # STATUS["1NTzpb48wZ7DPoHFMT9/Le0m3UjtBrwZ2R1TUWGsAQE="] = int(
             #     time())
 
             await PUBLISHER.send_all()

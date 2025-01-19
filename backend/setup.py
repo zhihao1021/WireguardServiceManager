@@ -47,7 +47,7 @@ async def main():
 
         await conn.save()
         await user.save()
-    
+
     await gather(*list(map(
         lambda pair: create_task(task(*pair)),
         zip(users, connections)
@@ -70,7 +70,6 @@ async def main():
         server_side_config.append(conn.gen_server_side_config())
 
     with open(f"/etc/wireguard/{WIREGUARD_INTERFACE}.conf", "w", encoding="utf-8") as conf_file:
-    # with open(f"{WIREGUARD_INTERFACE}.conf", "w", encoding="utf-8") as conf_file:
         conf_file.write("\n".join(server_side_config))
 
 

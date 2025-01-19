@@ -1,20 +1,18 @@
-"use client"
-import { ChangeEvent, KeyboardEvent, ReactNode, Suspense, useCallback, useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { ChangeEvent, KeyboardEvent, ReactNode, useCallback, useEffect, useState } from "react";
 
 import req from "@/config/axios";
 import JWT from "@/schemas/jwt";
 
-import style from "./page.module.scss";
+import style from "./index.module.scss";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-function Conetent(): ReactNode {
+export default function LoginPage(): ReactNode {
     const [loading, setLoading] = useState<boolean>(false);
     const [code, setCode] = useState<string | null>();
     const [joinKey, setJoinKey] = useState<string>("");
-    const searchParams = useSearchParams();
-    const newCode = searchParams.get("code");
-    const router = useRouter();
+
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     const onJoinKeyChage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setJoinKey(event.target.value);
@@ -30,20 +28,23 @@ function Conetent(): ReactNode {
             const data = response.data as JWT;
             localStorage.setItem("token_type", data.token_type);
             localStorage.setItem("access_token", data.access_token);
-            router.push("/");
+            navigate("/");
         }).catch(() => {
             setCode(null);
             setJoinKey("");
             setLoading(false);
         })
-    }, [code, joinKey, router]);
+    }, [code, joinKey, navigate]);
 
     useEffect(() => {
+        const params = searchParams;
+        const code = params.get("code");
+        params.delete("code");
+        if (code) setSearchParams(params);
         setCode(current => {
-            return current ?? newCode
+            return current ?? code
         });
-        if (newCode) router.replace(location.pathname);
-    }, [newCode, router]);
+    }, [location.search, searchParams, setSearchParams]);
 
     return <div className={style.loginPage}>
         <div className={style.box}>
@@ -51,9 +52,9 @@ function Conetent(): ReactNode {
             <div className={style.content} data-loading={loading || code === undefined}>
                 <div className={style.loading} />
                 {
-                    code == null ? <Link href={process.env.NEXT_PUBLIC_OAUTH_URL ?? ""}>
+                    code == null ? <a href={import.meta.env.VITE_OAUTH_URL ?? ""}>
                         <img src="/discord-logo-white.svg" />
-                    </Link> : <div className={style.joinKey}>
+                    </a> : <div className={style.joinKey}>
                         <div className={style.inputBox}>
                             <span className="ms">key</span>
                             <input
@@ -69,9 +70,4 @@ function Conetent(): ReactNode {
             </div>
         </div>
     </div>
-}
-export default function LoginPage(): ReactNode {
-    return <Suspense>
-        <Conetent />
-    </Suspense>
 }
