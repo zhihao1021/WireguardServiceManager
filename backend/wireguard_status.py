@@ -8,7 +8,7 @@ from asyncio import (
     gather,
     sleep as asleep
 )
-from subprocess import run, PIPE
+from subprocess import run, PIPE, DEVNULL
 
 from config import WIREGUARD_INTERFACE
 
@@ -45,19 +45,22 @@ async def status_update_task():
         try:
             proc = run(
                 args=["wg", "show", WIREGUARD_INTERFACE, "latest-handshakes"],
-                stdout=PIPE
+                stdout=PIPE,
+                stderr=DEVNULL
             )
             results = proc.stdout.decode().strip().split("\n")
 
-            for result in results:
-                public_key, time = result.split("\t")
-                STATUS[public_key] = int(time)
+            if len(results) > 0 and len(results[0]) > 0:
+                for result in results:
+                    public_key, time = result.split("\t")
+                    STATUS[public_key] = int(time)
 
-            await PUBLISHER.send_all()
+                await PUBLISHER.send_all()
 
             for _ in range(10):
                 await asleep(1)
         except CancelledError:
             return
         except:
-            pass
+            for _ in range(10):
+                await asleep(1)
