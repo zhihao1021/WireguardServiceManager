@@ -1,4 +1,5 @@
 from asyncio import get_event_loop, run
+from os import getpid
 
 from api import run_api
 from database.database import setup
@@ -17,6 +18,8 @@ async def main():
 
 
 if __name__ == "__main__":
+    with open("pid", "w") as pid_file:
+        pid_file.write(str(getpid()))
     try:
         run(main=main())
     except KeyboardInterrupt:
