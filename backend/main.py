@@ -23,4 +23,4 @@ if __name__ == "__main__":
     try:
         run(main=main())
     except KeyboardInterrupt:
-        pass
+        exit(0)

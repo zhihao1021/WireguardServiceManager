@@ -30,7 +30,8 @@ async def run_api():
     config = Config(
         app=app,
         host=HOST,
-        port=PORT
+        port=PORT,
+        timeout_graceful_shutdown=5
     )
     server = Server(config=config)
 
