@@ -44,8 +44,6 @@ async function getConnectionString(): Promise<string> {
 }
 
 function getStatus(key: string, status?: { [key: string]: number }): "live" | "dead" | "unknow" {
-    console.log(key)
-    console.log(status);
     if (status === undefined || status[key] === undefined) return "unknow";
     const delta = Date.now() - (status[key] * 1000);
     if (delta > 180 * 1000) return "dead";
@@ -62,13 +60,6 @@ export default function HomePage(): ReactNode {
     const navigate = useNavigate();
 
     const userConnectionInfo: UserWithConnection | undefined = useMemo(() => {
-        return Object.assign({
-            connection: {
-                public_key: "",
-                ip_address: "192.16.255.255"
-            }
-        }, userData) as UserWithConnection;
-
         return userList.find(v => v.discord_id == userData?.discord_id);
     }, [userData, userList]);
 
