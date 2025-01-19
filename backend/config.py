@@ -24,6 +24,7 @@ class WireguardConfig(BaseModel):
     interface_name: str = "wg0"
     endpoint: str = "example.com:51820"
     keey_alive: int = 30
+    addition_ips: list[str] = []
 
 
 class MongoDBConfig(BaseModel):
@@ -71,6 +72,7 @@ if __name__ == "config":
         WIREGUARD_INTERFACE = config.wireguard_config.interface_name
         WIREGUARD_ENDPOINT = config.wireguard_config.endpoint
         WIREGUARD_KEEP_ALIVE = config.wireguard_config.keey_alive
+        WIREGUARD_ADDITION_IPS = config.wireguard_config.addition_ips
 
         MONGODB_URI = config.mongodb_config.uri
         MONGODB_DB = config.mongodb_config.db_name

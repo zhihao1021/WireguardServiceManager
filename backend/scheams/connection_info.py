@@ -9,6 +9,7 @@ from config import (
     WIREGUARD_PUBLIC_KEY,
     WIREGUARD_PRESHARED_KEY,
     WIREGUARD_SUBNET,
+    WIREGUARD_ADDITION_IPS
 )
 
 
@@ -19,6 +20,8 @@ class ConnectionInfo(Document):
     discord_user_id: Optional[str] = None
 
     def to_client_conf(self) -> str:
+        allowed_ips = [WIREGUARD_SUBNET.with_prefixlen] + WIREGUARD_ADDITION_IPS
+
         result = [
             f"[Interface]",
             f"PrivateKey = {self.private_key}",
@@ -27,7 +30,7 @@ class ConnectionInfo(Document):
             f"[Peer]",
             f"PublicKey = {WIREGUARD_PUBLIC_KEY}",
             f"PresharedKey = {WIREGUARD_PRESHARED_KEY}",
-            f"AllowedIPs = {WIREGUARD_SUBNET}",
+            f"AllowedIPs = {', '.join(allowed_ips)}",
             f"Endpoint = {WIREGUARD_ENDPOINT}",
             f"PersistentKeepalive = {WIREGUARD_KEEP_ALIVE}",
         ]
