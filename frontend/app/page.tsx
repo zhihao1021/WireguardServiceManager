@@ -61,7 +61,7 @@ export default function App(): ReactNode {
         if (!endPoint.startsWith("http"))
             endPoint = `${location.origin}${endPoint}`;
 
-        const ws = new WebSocket(`${endPoint.replace("http", "ws")}/connection`);
+        const ws = new WebSocket(`${endPoint.replace("http", "ws")}/connection/ws`);
         ws.onopen = () => ws.send(localStorage.getItem("access_token") ?? "")
         ws.onmessage = message => {
             const rawData: Blob = message.data;
