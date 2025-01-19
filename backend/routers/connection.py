@@ -55,7 +55,7 @@ async def get_connection_string(user: UserDepends) -> str:
 
 
 @router.websocket(
-    path=""
+    path="/ws"
 )
 async def subscribe(ws: WebSocket):
     try:
