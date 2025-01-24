@@ -3,6 +3,7 @@ from orjson import dumps, loads, OPT_INDENT_2
 from pydantic import BaseModel
 from pywgkey import WgKey, WgPsk
 
+from inspect import currentframe, getouterframes
 from ipaddress import IPv4Network
 from logging import getLogger
 from os import urandom
@@ -23,12 +24,12 @@ class WireguardConfig(BaseModel):
     post_down: Optional[str] = None
     interface_name: str = "wg0"
     endpoint: str = "example.com:51820"
-    keey_alive: int = 30
+    keep_alive: int = 30
     addition_ips: list[str] = []
 
 
 class MongoDBConfig(BaseModel):
-    uri: str = "mongodb+srv://username:password@example.com/wsm"
+    uri: str = "mongodb://username:password@example.com/wsm"
     db_name: str = "wsm"
     use_tls: bool = False
     tls_cafile: Optional[str] = None
@@ -52,6 +53,8 @@ class Config(BaseModel):
 
 if __name__ == "config":
     logger = getLogger("config")
+    root_filename = getouterframes(currentframe(), 2)[-1].filename or ""
+
     try:
         with open("config.json", "rb") as config_file:
             config = Config(**loads(config_file.read()))
@@ -71,7 +74,7 @@ if __name__ == "config":
         WIREGUARD_POST_DOWN = config.wireguard_config.post_down
         WIREGUARD_INTERFACE = config.wireguard_config.interface_name
         WIREGUARD_ENDPOINT = config.wireguard_config.endpoint
-        WIREGUARD_KEEP_ALIVE = config.wireguard_config.keey_alive
+        WIREGUARD_KEEP_ALIVE = config.wireguard_config.keep_alive
         WIREGUARD_ADDITION_IPS = config.wireguard_config.addition_ips
 
         MONGODB_URI = config.mongodb_config.uri
@@ -83,15 +86,10 @@ if __name__ == "config":
         DISCORD_CLIENT_ID = config.discord_config.client_id
         DISCORD_CLIENT_SECRET = config.discord_config.client_secret
     except:
-        logger.error(
-            "No config file found, auto generate a new config file...")
-        with open("config.json", "wb") as config_file:
-            config_file.write(dumps(
-                Config().model_dump(),
-                option=OPT_INDENT_2
-            ))
-        logger.error("Please go to modify the config.json.")
-        exit(0)
+        if not root_filename.endswith("setup.py"):
+            print("Config file not found, please run `python3 setup.py` first.")
+            exit(0)
 
-    with open("config.json", "wb") as config_file:
-        config_file.write(dumps(config.model_dump(), option=OPT_INDENT_2))
+    if not root_filename.endswith("setup.py"):
+        with open("config.json", "wb") as config_file:
+            config_file.write(dumps(config.model_dump(), option=OPT_INDENT_2))

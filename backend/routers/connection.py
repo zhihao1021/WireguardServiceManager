@@ -7,7 +7,7 @@ from fastapi import (
 )
 from starlette.websockets import WebSocketState
 
-from asyncio import sleep as asleep
+from asyncio import CancelledError, create_task, gather, sleep as asleep
 
 from scheams.connection_info import ConnectionInfo
 from scheams.user import (
@@ -58,13 +58,35 @@ async def get_connection_string(user: UserDepends) -> str:
     path="/ws"
 )
 async def subscribe(ws: WebSocket):
+    async def timeout():
+        try:
+            await asleep(5)
+            raise TimeoutError
+        except CancelledError:
+            return
+
     try:
         await ws.accept()
-        token = await ws.receive_text()
+
         try:
+            timeout_task = create_task(timeout())
+            async def wait_token():
+                token = await ws.receive_text()
+                timeout_task.cancel()
+                return token
+            
+            token = (await gather(
+                create_task(wait_token()),
+                timeout_task
+            ))[0]
+
             valid_token_string(token)
         except:
-            await ws.close()
+            try:
+                await ws.close()
+            except:
+                pass
+            return
 
         await PUBLISHER.add_subscriber(ws)
         while ws.client_state == WebSocketState.CONNECTED:

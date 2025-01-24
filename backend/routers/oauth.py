@@ -1,7 +1,6 @@
 from aiohttp import ClientSession
 from fastapi import (
     APIRouter,
-    Body,
     Depends,
     HTTPException,
     Security,
@@ -59,7 +58,7 @@ IP_NOT_ENOUGH = HTTPException(
 
 SECURITY = HTTPBearer(
     scheme_name="JWT",
-    description="JWT which get from posting discord oauth code to /auth/login."
+    description="JWT which get from posting discord oauth code to /oauth"
 )
 
 router = APIRouter(
@@ -177,25 +176,7 @@ async def valid_code(
     path="",
     response_model=JWT,
     status_code=status.HTTP_201_CREATED,
-    description="Get token by discord code",
-    responses={
-        400: {
-            "description": "Valid failed when authorize the token with discord.",
-            "content": {
-                "application/json": {
-                    "example": {"detail": AUTHORIZE_FAILED.detail}
-                }
-            },
-        },
-        403: {
-            "description": "The join key is wrong.",
-            "content": {
-                "application/json": {
-                    "example": {"detail": JOIN_KEY_WRONG.detail}
-                }
-            },
-        }
-    }
+    description="Get token by discord code"
 )
 async def oauth(data: OAuthData) -> JWT:
     user_data = await valid_code(
@@ -218,24 +199,6 @@ async def oauth(data: OAuthData) -> JWT:
     response_model=JWT,
     status_code=status.HTTP_200_OK,
     description="Refresh token",
-    responses={
-        400: {
-            "description": "Valid failed when authorize the token with discord.",
-            "content": {
-                "application/json": {
-                    "example": {"detail": AUTHORIZE_FAILED.detail}
-                }
-            },
-        },
-        401: {
-            "description": "Your token is invalid.",
-            "content": {
-                "application/json": {
-                    "example": {"detail": INVALIDE_AUTHENTICATION_CREDENTIALS.detail}
-                }
-            }
-        }
-    }
 )
 async def refresh(user: UserDepends) -> JWT:
     user_data = await UserData.find_one(UserData.discord_id == user.discord_id)
